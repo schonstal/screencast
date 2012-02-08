@@ -7,11 +7,36 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-x=`date +%s`
-while true
-do
-  frame="$HOME/screencast/$x.png"
-  screencapture -x $frame
-  sleep 20
-  x=`date +%s`
-done
+capcmd='unknown'
+
+hash scrot 2>&- 
+if [ $? -eq 0 ] 
+then 
+  capcmd='scrot -m'
+fi 
+
+hash screencapture 2>&-
+if [ $? -eq 0 ] 
+then 
+  capcmd='screencapture -x'
+fi 
+
+if [ "$capcmd" != 'unknown' ]
+then
+  screencast_dir="$HOME/screencast"
+  if [ ! -d $screencast_dir ]
+  then
+    mkdir $screencast_dir 
+  fi
+
+  while true
+  do
+    timestamp=`date +%s`
+    frame="$screencast_dir/$timestamp.png"
+    $capcmd $frame
+    sleep 20
+  done
+else
+  echo "No known screen capture applications installed."
+  echo "Try installing screencapture or scrot."
+fi
